@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 const FOOTER_LINKS = [
   { to: '/', label: 'Shop' },
   { to: '/how-it-works', label: 'How it works' },
+  { to: '/about', label: 'About' },
   { to: '/seller/register', label: 'Sell on 1Fi' },
   { to: '/seller/login', label: 'Seller login' },
 ];
