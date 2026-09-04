@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const formatCurrency = (value) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, index = 0 }) => {
   const thumbnail = product.variants?.[0];
   const lowestEmi = thumbnail?.emiPlans?.length
     ? Math.min(...thumbnail.emiPlans.map((p) => p.monthlyPayment))
@@ -12,7 +12,11 @@ const ProductCard = ({ product }) => {
   const hasZeroInterest = thumbnail?.emiPlans?.some((p) => p.interestRate === 0);
 
   return (
-    <Link to={`/products/${product.slug}`} className="group flex flex-col border border-neutral-200 hover:border-neutral-400 transition-colors">
+    <Link
+      to={`/products/${product.slug}`}
+      style={{ animationDelay: `${Math.min(index, 7) * 55}ms` }}
+      className="motion-rise group flex flex-col border border-neutral-200 bg-white hover:-translate-y-1 hover:border-neutral-400 hover:shadow-[0_14px_35px_rgba(23,19,16,0.08)] transition-all duration-300"
+    >
       <div className="relative aspect-square bg-neutral-50 overflow-hidden flex items-center justify-center border-b border-neutral-200">
         {hasZeroInterest && (
           <span className="absolute top-3 left-3 text-[10px] font-medium uppercase tracking-wider text-neutral-500 border border-neutral-300 bg-white px-2 py-0.5">
@@ -24,7 +28,7 @@ const ProductCard = ({ product }) => {
             src={thumbnail.image}
             alt={product.name}
             loading="lazy"
-            className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-[1.04]"
+            className="w-full h-full object-contain p-6 transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-2"
           />
         ) : (
           <span className="text-neutral-300 text-[10px] font-medium uppercase tracking-widest">No image</span>
@@ -36,7 +40,7 @@ const ProductCard = ({ product }) => {
         <div className="flex items-baseline justify-between">
           <span className="text-sm text-neutral-500">{formatCurrency(thumbnail?.price)}</span>
           {lowestEmi && (
-            <span className="text-xs font-medium text-[var(--plum)] whitespace-nowrap">
+            <span className="text-xs font-medium text-(--plum) whitespace-nowrap">
               {formatCurrency(lowestEmi)}/mo
             </span>
           )}

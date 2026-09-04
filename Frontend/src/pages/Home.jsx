@@ -66,7 +66,7 @@ const Home = () => {
       {/* Hero */}
       <section className="border-b border-neutral-200 overflow-hidden">
         <div className="max-w-3xl mx-auto px-6 md:px-10 pt-16 md:pt-20 pb-4 text-center">
-          <div className="inline-flex items-center gap-2 bg-white border border-neutral-200 rounded-full pl-2 pr-4 py-1.5 mb-8 shadow-sm">
+          <div className="motion-rise inline-flex items-center gap-2 bg-white border border-neutral-200 rounded-full pl-2 pr-4 py-1.5 mb-8 shadow-sm">
             <span className="flex -space-x-2">
               {['#e6e6ea', '#b5602f', '#28425f'].map((c) => (
                 <span key={c} className="w-6 h-6 rounded-full border-2 border-white" style={{ background: c }} />
@@ -75,13 +75,13 @@ const Home = () => {
             <span className="text-xs font-medium text-neutral-600">Backed by real mutual fund investments</span>
           </div>
 
-          <h1 className="text-[2.75rem] md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-6 text-neutral-900">
+          <h1 className="motion-rise motion-delay-1 text-[2.75rem] md:text-6xl font-extrabold tracking-tight leading-[1.05] mb-6 text-neutral-900">
             The smartest way<br />to own a phone
           </h1>
-          <p className="text-neutral-500 text-lg max-w-lg mx-auto mb-9 leading-relaxed">
+          <p className="motion-rise motion-delay-2 text-neutral-500 text-lg max-w-lg mx-auto mb-9 leading-relaxed">
             EMI plans paced against your own mutual fund — 0% interest options, cashback on every plan, no paperwork drama.
           </p>
-          <div className="flex items-center justify-center gap-6 flex-wrap">
+          <div className="motion-rise motion-delay-3 flex items-center justify-center gap-6 flex-wrap">
             <a
               href="#catalogue"
               className="inline-flex items-center px-7 py-3.5 rounded-full bg-neutral-900 hover:bg-[var(--plum)] text-white text-sm font-semibold transition-colors"
@@ -102,12 +102,12 @@ const Home = () => {
           </div>
           {heroVariant && (
             <div className="relative flex items-center justify-center">
-              <img src={heroVariant.image} alt={heroProduct.name} className="relative max-h-72 md:max-h-80 object-contain drop-shadow-2xl" />
+              <img src={heroVariant.image} alt={heroProduct.name} className="hero-product relative max-h-72 md:max-h-80 object-contain drop-shadow-2xl" />
             </div>
           )}
         </div>
 
-        <div className="max-w-4xl mx-auto px-6 md:px-10 pb-14 flex items-center justify-center gap-10 md:gap-16 flex-wrap border-t border-neutral-200 pt-10">
+        <div className="motion-fade motion-delay-4 max-w-4xl mx-auto px-6 md:px-10 pb-14 flex items-center justify-center gap-10 md:gap-16 flex-wrap border-t border-neutral-200 pt-10">
           <div className="text-center">
             <p className="text-2xl font-extrabold text-neutral-900">{products.length || '—'}</p>
             <p className="text-[11px] text-neutral-400 font-medium uppercase tracking-wider mt-1">Brands live</p>
@@ -176,7 +176,7 @@ const Home = () => {
 
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-px bg-neutral-200">
-            {[1, 2, 3, 4].map((n) => <div key={n} className="aspect-[3/4] bg-neutral-50 animate-pulse" />)}
+            {[1, 2, 3, 4].map((n) => <div key={n} className="skeleton-shimmer aspect-[3/4] bg-neutral-50 animate-pulse" />)}
           </div>
         ) : error ? (
           <p className="text-sm text-neutral-400 py-16 text-center">Couldn&apos;t load the catalogue. Make sure the API is running.</p>
@@ -184,7 +184,7 @@ const Home = () => {
           <p className="text-sm text-neutral-400 py-16 text-center">No products match your search.</p>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-            {filtered.map((p) => <ProductCard key={p._id} product={p} />)}
+            {filtered.map((p, index) => <ProductCard key={p._id} product={p} index={index} />)}
           </div>
         )}
       </section>
