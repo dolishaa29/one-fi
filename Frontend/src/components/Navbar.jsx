@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Menu, X, Search } from 'lucide-react';
+import { API_URL } from '../config/api';
 
 const NAV_LINKS = [
   { to: '/', label: 'Shop' },
@@ -48,7 +49,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
+        const response = await axios.get(`${API_URL}/products`);
         setProducts(response.data.products || []);
       } catch (error) {
         console.error('Error fetching products for search:', error);

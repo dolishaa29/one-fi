@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import { ArrowLeft, Plus, Trash2, Upload, Image as ImageIcon } from "lucide-react";
@@ -41,7 +42,7 @@ const SellerProductForm = () => {
     if (!isEdit) return;
     const loadProduct = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/seller/products`, { headers: authHeader() });
+        const response = await axios.get(`${API_URL}/seller/products`, { headers: authHeader() });
         const found = (response.data.products || []).find((p) => p._id === id);
         if (!found) {
           setMessage("Product not found");
@@ -90,7 +91,7 @@ const SellerProductForm = () => {
     try {
       const formData = new FormData();
       formData.append("image", file);
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/seller/upload-image`, formData, {
+      const response = await axios.post(`${API_URL}/seller/upload-image`, formData, {
         headers: { ...authHeader(), "Content-Type": "multipart/form-data" },
       });
       updateVariant(vIndex, "image", response.data.url);
@@ -112,9 +113,9 @@ const SellerProductForm = () => {
     try {
       const payload = { name, brand, category, description, variants };
       if (isEdit) {
-        await axios.put(`${import.meta.env.VITE_API_URL}/seller/products/${id}`, payload, { headers: authHeader() });
+        await axios.put(`${API_URL}/seller/products/${id}`, payload, { headers: authHeader() });
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/seller/products`, payload, { headers: authHeader() });
+        await axios.post(`${API_URL}/seller/products`, payload, { headers: authHeader() });
       }
       navigate("/seller/dashboard");
     } catch (err) {

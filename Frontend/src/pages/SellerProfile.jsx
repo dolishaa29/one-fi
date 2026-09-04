@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { ArrowLeft, Store, Mail, Phone, LogOut } from "lucide-react";
@@ -26,7 +27,7 @@ const SellerProfile = () => {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/sellerprofile`, {
+        const response = await axios.get(`${API_URL}/sellerprofile`, {
           headers: { Authorization: `Bearer ${Cookies.get("sellerToken")}` },
         });
         setProfile(response.data.profile);

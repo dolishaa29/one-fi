@@ -5,6 +5,7 @@ import { AlertTriangle, Check } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
+import { API_URL } from '../config/api';
 
 const STEPS = [
   { number: '01', title: 'Choose a product', description: 'Pick the tech you love, in the variant that fits.' },
@@ -36,8 +37,8 @@ const ProductPage = () => {
         setLoading(true);
         setError(false);
         const [productRes, listRes] = await Promise.all([
-          axios.get(`${import.meta.env.VITE_API_URL}/products/${slug}`),
-          axios.get(`${import.meta.env.VITE_API_URL}/products`),
+          axios.get(`${API_URL}/products/${slug}`),
+          axios.get(`${API_URL}/products`),
         ]);
         const loadedProduct = productRes.data.product;
         setProduct(loadedProduct);

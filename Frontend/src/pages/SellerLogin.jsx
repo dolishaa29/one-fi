@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
+import { API_URL } from "../config/api";
 
 const inputClass =
   "w-full px-3 py-2.5 border border-neutral-300 text-neutral-800 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-900 transition-colors";
@@ -19,7 +20,7 @@ const SellerLogin = () => {
     setLoading(true);
     setMessage("");
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/sellerlogin`, { email, password });
+      const response = await axios.post(`${API_URL}/sellerlogin`, { email, password });
       Cookies.set("sellerToken", response.data.token, { expires: 1 });
       navigate("/seller/dashboard");
     } catch (err) {

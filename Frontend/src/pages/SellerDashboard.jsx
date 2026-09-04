@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Plus, Pencil, Trash2, LogOut, PackageSearch, User } from "lucide-react";
@@ -16,7 +17,7 @@ const SellerDashboard = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/seller/products`, {
+        const response = await axios.get(`${API_URL}/seller/products`, {
           headers: { Authorization: `Bearer ${Cookies.get("sellerToken")}` },
         });
         setProducts(response.data.products || []);
@@ -32,7 +33,7 @@ const SellerDashboard = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Delete this product? This can't be undone.")) return;
     try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/seller/products/${id}`, {
+      await axios.delete(`${API_URL}/seller/products/${id}`, {
         headers: { Authorization: `Bearer ${Cookies.get("sellerToken")}` },
       });
       setProducts((prev) => prev.filter((p) => p._id !== id));

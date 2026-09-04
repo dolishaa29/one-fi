@@ -5,6 +5,7 @@ import { Search, X } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
+import { API_URL } from '../config/api';
 
 const HOW_IT_WORKS = [
   { number: '01', title: 'Pick a phone', description: 'Any brand, any storage — the catalogue below is live from the database.' },
@@ -26,7 +27,7 @@ const Home = () => {
       try {
         setLoading(true);
         setError(false);
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/products`);
+        const response = await axios.get(`${API_URL}/products`);
         setProducts(response.data.products || []);
       } catch (err) {
         console.error('Error fetching products:', err);

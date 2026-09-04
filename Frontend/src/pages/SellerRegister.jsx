@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../config/api";
 import { useNavigate, Link } from "react-router-dom";
 
 const inputClass =
@@ -22,7 +23,7 @@ const SellerRegister = () => {
     setLoading(true);
     setMessage("");
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/sellerregister`, {
+      await axios.post(`${API_URL}/sellerregister`, {
         name,
         businessName,
         email,
