@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, X } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
 import { API_URL } from '../config/api';
+
+const formatCurrency = (value) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 
 const HOW_IT_WORKS = [
   { number: '01', title: 'Pick a phone', description: 'Any brand, any storage — the catalogue below is live from the database.' },
@@ -19,6 +22,8 @@ const Home = () => {
   const [error, setError] = useState(false);
   const [search, setSearch] = useState('');
   const [brand, setBrand] = useState('All');
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [heroPaused, setHeroPaused] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -48,6 +53,7 @@ const Home = () => {
   }, [location.hash, loading]);
 
   const brands = useMemo(() => ['All', ...new Set(products.map((p) => p.brand))], [products]);
+  const brandList = useMemo(() => brands.filter((b) => b !== 'All'), [brands]);
 
   const filtered = products.filter((p) => {
     const matchesBrand = brand === 'All' || p.brand === brand;
@@ -56,8 +62,25 @@ const Home = () => {
     return matchesBrand && matchesSearch;
   });
 
-  const heroProduct = products[0];
+  const heroSlides = useMemo(() => products.slice(0, 5).filter((p) => p.variants?.[0]?.image), [products]);
+
+  const [prevHeroCount, setPrevHeroCount] = useState(heroSlides.length);
+  if (heroSlides.length !== prevHeroCount) {
+    setPrevHeroCount(heroSlides.length);
+    setHeroIndex(0);
+  }
+
+  useEffect(() => {
+    if (heroSlides.length < 2 || heroPaused) return undefined;
+    const id = setInterval(() => {
+      setHeroIndex((i) => (i + 1) % heroSlides.length);
+    }, 4500);
+    return () => clearInterval(id);
+  }, [heroSlides.length, heroPaused]);
+
+  const heroProduct = heroSlides[heroIndex];
   const heroVariant = heroProduct?.variants?.[0];
+  const goToHero = (i) => setHeroIndex((i + heroSlides.length) % heroSlides.length);
 
   return (
     <div className="bg-[var(--paper)] text-neutral-900">
@@ -94,16 +117,67 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Hero visual: product shot with a soft color halo behind it */}
-        <div className="relative max-w-3xl mx-auto px-6 pb-16 md:pb-20 pt-8">
+        {/* Hero visual: rotating product carousel with a soft color halo behind it */}
+        <div
+          className="relative max-w-3xl mx-auto px-6 pb-10 md:pb-12 pt-8"
+          onMouseEnter={() => setHeroPaused(true)}
+          onMouseLeave={() => setHeroPaused(false)}
+        >
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center pointer-events-none">
             <span className="w-56 h-56 md:w-72 md:h-72 -translate-x-28 md:-translate-x-40 rounded-full bg-[color-mix(in_srgb,var(--plum)_18%,transparent)] blur-3xl" />
             <span className="w-56 h-56 md:w-72 md:h-72 translate-x-28 md:translate-x-40 rounded-full bg-amber-200/40 blur-3xl" />
           </div>
+
           {heroVariant && (
-            <div className="relative flex items-center justify-center">
-              <img src={heroVariant.image} alt={heroProduct.name} className="hero-product relative max-h-72 md:max-h-80 object-contain drop-shadow-2xl" />
-            </div>
+            <Link to={`/products/${heroProduct.slug}`} className="relative flex items-center justify-center">
+              <img
+                key={heroProduct._id}
+                src={heroVariant.image}
+                alt={heroProduct.name}
+                className="hero-product motion-fade relative max-h-72 md:max-h-80 object-contain drop-shadow-2xl"
+              />
+            </Link>
+          )}
+
+          {heroSlides.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={() => goToHero(heroIndex - 1)}
+                aria-label="Previous phone"
+                className="absolute left-0 md:-left-2 top-[45%] -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 border border-neutral-200 text-neutral-600 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 backdrop-blur-sm transition-colors"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <button
+                type="button"
+                onClick={() => goToHero(heroIndex + 1)}
+                aria-label="Next phone"
+                className="absolute right-0 md:-right-2 top-[45%] -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-white/80 border border-neutral-200 text-neutral-600 hover:bg-neutral-900 hover:text-white hover:border-neutral-900 backdrop-blur-sm transition-colors"
+              >
+                <ChevronRight size={16} />
+              </button>
+
+              <div className="relative flex flex-col items-center gap-3 mt-2">
+                <p className="text-xs text-neutral-400">
+                  <span className="font-medium text-neutral-600">{heroProduct.name}</span> · from {formatCurrency(heroVariant.price)}
+                </p>
+                <div className="flex items-center gap-2">
+                  {heroSlides.map((p, i) => (
+                    <button
+                      key={p._id}
+                      type="button"
+                      onClick={() => setHeroIndex(i)}
+                      aria-label={`Show ${p.name}`}
+                      aria-current={i === heroIndex}
+                      className={`h-1.5 rounded-full transition-all duration-300 ${
+                        i === heroIndex ? 'w-6 bg-neutral-900' : 'w-1.5 bg-neutral-300 hover:bg-neutral-400'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </>
           )}
         </div>
 
@@ -124,13 +198,23 @@ const Home = () => {
       </section>
 
       {/* Brand strip */}
-      {brands.length > 1 && (
+      {brandList.length >= 5 ? (
         <section className="border-b border-neutral-200 py-5">
-          <div className="max-w-6xl mx-auto px-6 md:px-10 flex items-center justify-center flex-wrap gap-x-10 gap-y-2 text-neutral-400 text-xs font-medium uppercase tracking-[0.2em]">
-            {brands.filter((b) => b !== 'All').map((b) => <span key={b}>{b}</span>)}
+          <div className="marquee-viewport max-w-6xl mx-auto">
+            <div className="marquee-track flex items-center gap-14 w-max text-neutral-400 text-xs font-medium uppercase tracking-[0.2em]">
+              {[...brandList, ...brandList].map((b, i) => (
+                <span key={`${b}-${i}`} className="shrink-0">{b}</span>
+              ))}
+            </div>
           </div>
         </section>
-      )}
+      ) : brandList.length > 1 ? (
+        <section className="border-b border-neutral-200 py-5">
+          <div className="max-w-6xl mx-auto px-6 md:px-10 flex items-center justify-center flex-wrap gap-x-10 gap-y-2 text-neutral-400 text-xs font-medium uppercase tracking-[0.2em]">
+            {brandList.map((b) => <span key={b}>{b}</span>)}
+          </div>
+        </section>
+      ) : null}
 
       {/* Catalogue */}
       <section id="catalogue" className="max-w-6xl mx-auto px-6 md:px-10 py-16 md:py-20">

@@ -39,12 +39,26 @@ const SearchResults = ({ query, results, onSelect }) => {
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [query, setQuery] = useState('');
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const searchRef = useRef(null);
   const searchInputRef = useRef(null);
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+
+  if (location.pathname !== prevPathname) {
+    setPrevPathname(location.pathname);
+    setMenuOpen(false);
+  }
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -88,7 +102,13 @@ const Navbar = () => {
   const isActive = (to) => (to === '/' ? location.pathname === '/' : location.pathname.startsWith(to));
 
   return (
-    <header className="sticky top-0 z-30 bg-[var(--paper)] border-b border-neutral-200">
+    <header
+      className={`sticky top-0 z-30 transition-all duration-300 ${
+        scrolled
+          ? 'bg-[var(--paper)]/90 backdrop-blur-md border-b border-neutral-200 shadow-[0_4px_24px_-10px_rgba(23,19,16,0.15)]'
+          : 'bg-[var(--paper)] border-b border-transparent'
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-6 md:px-10 h-[72px] flex items-center justify-between gap-6">
         <Link to="/" className="font-display text-2xl tracking-tight text-neutral-900 shrink-0">
           1<span className="text-[var(--plum)] italic">Fi</span>
@@ -120,7 +140,7 @@ const Navbar = () => {
             </button>
 
             {searchOpen && (
-              <div className="absolute top-full right-0 mt-3 w-80 max-w-[calc(100vw-3rem)] bg-white border border-neutral-200 rounded-2xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] overflow-hidden">
+              <div className="dropdown-in absolute top-full right-0 mt-3 w-80 max-w-[calc(100vw-3rem)] bg-white border border-neutral-200 rounded-2xl shadow-[0_12px_32px_-8px_rgba(0,0,0,0.12)] overflow-hidden">
                 <div className="p-3 border-b border-neutral-100">
                   <input
                     ref={searchInputRef}
@@ -157,23 +177,39 @@ const Navbar = () => {
       </div>
 
       {/* Mobile menu */}
-      <div className={`md:hidden overflow-hidden transition-all duration-300 border-t border-neutral-100 ${menuOpen ? 'max-h-72' : 'max-h-0 border-t-0'}`}>
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-300 ease-[cubic-bezier(.22,1,.36,1)] border-t border-neutral-100 bg-[var(--paper)] ${
+          menuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0 border-t-0'
+        }`}
+      >
         <nav className="flex flex-col text-sm font-medium text-neutral-600 px-6 py-3">
-          {NAV_LINKS.map((link) => (
+          {NAV_LINKS.map((link, i) => (
             <Link
               key={link.to}
               to={link.to}
               onClick={() => setMenuOpen(false)}
-              className={`py-2.5 border-b border-neutral-100 transition-colors ${isActive(link.to) ? 'text-neutral-900 font-semibold' : 'hover:text-neutral-900'}`}
+              style={{ transitionDelay: menuOpen ? `${i * 40}ms` : '0ms' }}
+              className={`flex items-center justify-between py-2.5 border-b border-neutral-100 transition-all duration-300 ${
+                menuOpen ? 'translate-x-0 opacity-100' : '-translate-x-2 opacity-0'
+              } ${isActive(link.to) ? 'text-neutral-900 font-semibold' : 'hover:text-neutral-900'}`}
             >
               {link.label}
+              {isActive(link.to) && <span className="w-1.5 h-1.5 rounded-full bg-[var(--plum)]" />}
             </Link>
           ))}
-          <Link to="/#catalogue" onClick={() => setMenuOpen(false)} className="py-2.5 font-semibold text-neutral-900">
+          <Link to="/#catalogue" onClick={() => setMenuOpen(false)} className="py-3 font-semibold text-neutral-900">
             Browse phones →
           </Link>
         </nav>
       </div>
+
+      {menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          aria-hidden="true"
+          className="md:hidden fixed inset-0 top-[72px] -z-10 bg-neutral-900/20 motion-fade"
+        />
+      )}
     </header>
   );
 };
