@@ -5,6 +5,7 @@
   --ink: #171310;
   --paper: #fdfcfa;
   --plum: #4a1d6e;
+  --plum-light: color-mix(in srgb, var(--plum) 45%, white);
 }
 
 html {

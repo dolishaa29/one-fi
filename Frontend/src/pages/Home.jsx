@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { Link, useLocation } from 'react-router-dom';
-import { Search, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, X, ChevronLeft, ChevronRight, Smartphone, Wallet, PackageCheck, Store } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import ProductCard from '../components/ProductCard';
@@ -11,9 +11,9 @@ const formatCurrency = (value) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(value);
 
 const HOW_IT_WORKS = [
-  { number: '01', title: 'Pick a phone', description: 'Any brand, any storage — the catalogue below is live from the database.' },
-  { number: '02', title: 'Choose a plan', description: '0% interest paced against your mutual fund, or a longer tenure at a fixed rate.' },
-  { number: '03', title: 'Get cashback, get moving', description: 'Cashback lands in your fund. Delivery lands at your door.' },
+  { number: '01', icon: Smartphone, title: 'Pick a phone', description: 'Any brand, any storage — the catalogue below is live from the database.' },
+  { number: '02', icon: Wallet, title: 'Choose a plan', description: '0% interest paced against your mutual fund, or a longer tenure at a fixed rate.' },
+  { number: '03', icon: PackageCheck, title: 'Get cashback, get moving', description: 'Cashback lands in your fund. Delivery lands at your door.' },
 ];
 
 const Home = () => {
@@ -281,7 +281,12 @@ const Home = () => {
           <div className="grid md:grid-cols-3 gap-10 md:gap-14">
             {HOW_IT_WORKS.map((step) => (
               <div key={step.number} className="pt-6 border-t-2 border-neutral-900">
-                <p className="font-display italic text-2xl text-[var(--plum)] mb-3">{step.number}</p>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center shrink-0">
+                    <step.icon size={17} />
+                  </span>
+                  <p className="font-display italic text-2xl text-[var(--plum)]">{step.number}</p>
+                </div>
                 <p className="font-medium text-lg mb-2">{step.title}</p>
                 <p className="text-sm text-neutral-500 leading-relaxed">{step.description}</p>
               </div>
@@ -294,18 +299,26 @@ const Home = () => {
       </section>
 
       {/* Seller CTA */}
-      <section className="border-t border-neutral-200">
-        <div className="max-w-6xl mx-auto px-6 md:px-10 py-16 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
-          <div>
-            <h2 className="font-display text-3xl mb-2">Selling phones? List them on 1Fi.</h2>
-            <p className="text-neutral-500 max-w-md">Reach buyers who&apos;d rather EMI than empty their savings. Free to list.</p>
+      <section className="border-t border-neutral-200 py-16 md:py-20">
+        <div className="max-w-6xl mx-auto px-6 md:px-10">
+          <div className="relative overflow-hidden rounded-3xl bg-neutral-900 px-8 py-12 md:px-14 md:py-16 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+            <span className="absolute -right-10 -top-16 w-56 h-56 rounded-full bg-[color-mix(in_srgb,var(--plum)_45%,transparent)] blur-3xl pointer-events-none" />
+            <div className="relative flex items-start gap-5">
+              <span className="hidden sm:flex w-12 h-12 rounded-full bg-white/10 text-white items-center justify-center shrink-0">
+                <Store size={20} />
+              </span>
+              <div>
+                <h2 className="font-display text-3xl text-white mb-2">Selling phones? List them on 1Fi.</h2>
+                <p className="text-white/60 max-w-md">Reach buyers who&apos;d rather EMI than empty their savings. Free to list.</p>
+              </div>
+            </div>
+            <Link
+              to="/seller/register"
+              className="relative shrink-0 inline-flex items-center px-8 py-3.5 rounded-full bg-white text-neutral-900 text-sm font-semibold uppercase tracking-[0.1em] hover:bg-(--plum-light) hover:text-white transition-colors"
+            >
+              Become a seller
+            </Link>
           </div>
-          <Link
-            to="/seller/register"
-            className="shrink-0 px-8 py-3.5 border border-neutral-900 text-neutral-900 text-sm font-medium uppercase tracking-[0.1em] hover:bg-neutral-900 hover:text-white transition-colors"
-          >
-            Become a seller
-          </Link>
         </div>
       </section>
 
